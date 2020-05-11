@@ -1,5 +1,5 @@
 STEVILO_DOVOLJENIH_NAPAK = 10
-PRAVILNA_ CRKA = '+'
+PRAVILNA_CRKA = '+'
 PONOVKJENA_CRKA = 'o'
 NAPACNS_CRKA = '-'
 
@@ -7,7 +7,7 @@ NAPACNS_CRKA = '-'
 ZMAGA = 'W'
 PORAZ = 'X'
 bazen = []
-with open('besede.txt') as datoteka_bazena:
+with open('besede.txt', encoding='utf-8') as datoteka_bazena:
     for beseda in datoteka_bazena:
         bazen_besed.append(beseda.strip().lower())
 
