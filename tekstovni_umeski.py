@@ -1,16 +1,15 @@
-import vislice
+import model
 
 def izpis_poraza(igra):
     return  f'IZGUBIL SI , GESLO JE BILO: {igra.geslo}'
 
-def izpis_poraza(igra):
-    return f'ZMAGAL SI, GESLO JE BILO: {igra.geslo},' +
-     f'POTREBOVAL SI {len(igra.napacne_crke())} UGIBOV'
+def izpis_zmage(igra):
+    return f'ZMAGAL SI, GESLO JE BILO: {igra.geslo},' + f'POTREBOVAL SI {len(igra.napacne_crke())} UGIBOV'
 
 def izpis_igra(igra):
     text = (
-        f'Stanje gesla: {igra.praviln_del_gesla()} /n '
-        f'Imaš še {model.STEVILO_DOVOLJENIH_NAPAK - igra.stevilo_napak(} možnosti za napako'
+        f'Stanje gesla: {igra.praviln_del_gesla()} \n '
+        f'Imaš še {model.STEVILO_DOVOLJENIH_NAPAK - igra.stevilo_napak()} možnosti za napako'
 
     )
 
@@ -24,7 +23,7 @@ def pozeni_umesnik():
     trenutna_igra = model.nova_igra()
 
     while True:
-        print(izpis_igra(trenitna_igra))
+        print(izpis_igra(trenutna_igra))
 
         crka = zahtevaj_vnos()
         rezultat = trenutna_igra.ugibaj(crka)

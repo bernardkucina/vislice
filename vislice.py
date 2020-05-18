@@ -1,91 +1,26 @@
-import random
+import bottle
+import model
 
-STEVILO_DOVOLJENIH_NAPAK = 10
+vislice = model.Vislice()
 
-# Konstante za rezultate ugibanj
-PRAVILNA_CRKA = '+'
-PONOVLJENA_CRKA = 'o'
-NAPACNA_CRKA = '-'
+@bottle.get('/')
+def index():
+    return bottle.template('views/index.tpl/')
 
-# konstante za zmago in poraz
-ZMAGA = 'W'
-PORAZ = 'X'
-
-bazen_besed = []
-with open("Vislice/besede.txt") as datoteka_bazena:
-    for beseda in datoteka_bazena:
-        bazen_besed.append(beseda.strip().lower())
-
-class Igra:
-    def __init__(self, geslo, crke=None):
-        self.geslo = geslo.lower()
-        if crke is None:
-            self.crke = [] # "AXCFED"
-        else:
-            self.crke = [c.lower() for c in crke]
-
-    def napacne_crke(self):
-        return [c for c in self.crke if c not in self.geslo]
-        # { ; if a \not \in A   }
-    
-    def pravilne_crke(self):
-        return [c for c in self.crke if c in self.geslo]
-
-    def stevilo_napak(self):
-        return len(self.napacne_crke())
-
-    def poraz(self):
-        return self.stevilo_napak() > STEVILO_DOVOLJENIH_NAPAK
-
-    def zmaga(self):
-        # return all(c in self.crke for c in self.geslo)
-        for c in self.geslo:
-            if c not in self.crke:
-                return False
-        
-        return True 
-
-    def nepravilni_ugibi(self):
-        return " ".join(self.napacne_crke())
-
-    def pravilni_del_gesla(self):
-        trenutno = ""
-        for crka in self.geslo:
-            if crka in self.crke:
-                trenutno += crka
-            else:
-                trenutno += "_"
-
-        return trenutno
-
-    def ugibaj(self, ugibana_crka):
-        ugibana_crka = ugibana_crka.lower()
-
-        if ugibana_crka in self.crke:
-            return PONOVLJENA_CRKA
-        
-        self.crke.append(ugibana_crka)
-
-        if ugibana_crka in self.geslo:
-            # Uganil je
-            if self.zmaga():
-                return ZMAGA
-            else:
-                return PRAVILNA_CRKA
-        else:
-            if self.poraz():
-                return PORAZ
-            else:
-                return NAPACNA_CRKA
-
-
-
+@bottle.post('/igra/')
 def nova_igra():
-    nakljucna_beseda = random.choice(bazen_besed)
-    return Igra(nakljucna_beseda)
+    id_nove_igre = vislice.nova_igra()
+    bottle.redirect({f"/igra/{id_nove_igre}/"})
 
-    
+@bottle.get('/igra/<id_igre:int>/')
+def pokazi_igro(id_igre):
+    igra, poskus = vislice.igre[id_igre]
+    return bottle.template('./Vislice/views/igra.tpl/', igra=igra, poskus=poskus, id_igre=id_igre)
 
-    
+bottle.run(reloader=True, debug=True)
 
-    
+@bottle.post('/igra/<id:_igre:int>/')
+def ugibaj(id_igre):
+    crka = bottle.request.forms.getunicode('crka')
+    vislice.ugibaj(id_igre, crka)
+    bottle.redirect(f'/igra/{id_igre}/')
